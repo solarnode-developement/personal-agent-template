@@ -35,36 +35,44 @@ async function handleSubmit() {
 
   try {
     if (mode.value === "sign-up") {
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: email.value,
-        password: password.value,
-        options: {
-          data: {
-            name: name.value || email.value.split("@")[0] || "User",
-          },
-        },
+      // Use our custom endpoint for signup (creates Starlight credits + sets cookie)
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.value,
+          password: password.value,
+          name: name.value || email.value.split("@")[0] || "User",
+        }),
       });
 
-      if (signUpError) {
-        error.value = signUpError.message ?? "Sign up failed.";
+      if (!response.ok) {
+        const data = await response.json();
+        error.value = data.statusMessage || "Sign up failed.";
         return;
       }
-    }
-    else {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: email.value,
-        password: password.value,
+    } else {
+      // Use our custom endpoint for signin (sets cookie)
+      const response = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.value,
+          password: password.value,
+        }),
       });
 
-      if (signInError) {
-        error.value = signInError.message ?? "Sign in failed.";
+      if (!response.ok) {
+        const data = await response.json();
+        error.value = data.statusMessage || "Sign in failed.";
         return;
       }
     }
 
     await navigateTo(redirectTo.value);
-  }
-  finally {
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : "An error occurred.";
+  } finally {
     loading.value = false;
   }
 }
