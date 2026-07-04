@@ -1,11 +1,7 @@
 <template>
-  <svg
-    viewBox="0 0 76 65"
-    fill="currentColor"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-    class="inline-block shrink-0"
-  >
-    <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
-  </svg>
+  <img
+    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/letter-s%20%281%29-zfG7a4GNiw1lsiDXeaVw8UvNT7iJPB.png"
+    alt="Sonas"
+    class="inline-block shrink-0 h-auto"
+  />
 </template>

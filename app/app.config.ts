@@ -1,7 +1,7 @@
 export default defineAppConfig({
   site: {
-    name: "V",
-    title: "V",
+    name: "Sonas",
+    title: "Sonas",
     description:
       "Your personal AI agent. Chat on the web, Slack, or iMessage — query Linear and pick up where you left off.",
     tagline: "Vercel × Eve",
