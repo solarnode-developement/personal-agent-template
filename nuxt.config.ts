@@ -11,7 +11,6 @@ export default defineNuxtConfig({
     viewTransition: true,
   },
   routeRules: {
-    "/login": { prerender: true },
     "/": { ssr: true, headers: privateNoStore },
     "/chat/**": { ssr: true, headers: privateNoStore },
     "/settings/**": { ssr: true, headers: privateNoStore },
@@ -31,14 +30,13 @@ export default defineNuxtConfig({
   nitro: {
     compressPublicAssets: true,
     prerender: {
-      routes: ["/login"],
       crawlLinks: false,
     },
   },
   app: {
     head: {
       htmlAttrs: { lang: "en" },
-      title: "V",
+      title: "Sonas",
       titleTemplate: "%s",
       charset: "utf-8",
       viewport: "width=device-width, initial-scale=1",
