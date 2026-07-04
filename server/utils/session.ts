@@ -1,19 +1,34 @@
 import type { H3Event } from "h3";
-import { fromNodeHeaders } from "better-auth/node";
-import { auth } from "~~/auth";
-import { getNodeRequest } from "~~/server/utils/h3-node";
+import { supabaseAdmin } from "~~/server/utils/auth";
 
 export async function requireSessionUserId(event: H3Event): Promise<string> {
-  const session = await auth.api.getSession({
-    headers: fromNodeHeaders(getNodeRequest(event).headers),
-  });
+  const token = getCookie(event, "sb-access-token");
 
-  if (!session?.user?.id) {
+  if (!token) {
     throw createError({
       statusCode: 401,
       statusMessage: "Unauthorized",
     });
   }
 
-  return session.user.id;
+  try {
+    const {
+      data: { user },
+      error,
+    } = await supabaseAdmin.auth.getUser(token);
+
+    if (error || !user?.id) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "Unauthorized",
+      });
+    }
+
+    return user.id;
+  } catch (error) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Unauthorized",
+    });
+  }
 }

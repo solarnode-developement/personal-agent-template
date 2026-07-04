@@ -2,7 +2,7 @@
 
 > Back to [README](../README.md) | See also: [Environment](./ENVIRONMENT.md), [Customization](./CUSTOMIZATION.md)
 
-This document describes the technical architecture of Personal Agent Template — a durable personal AI assistant built with Eve, Nuxt 4, and Better Auth.
+This document describes the technical architecture of Personal Agent Template — a durable personal AI assistant built with Eve, Nuxt 4, and Supabase Auth.
 
 ## System overview
 
@@ -25,8 +25,8 @@ flowchart TB
   subgraph nuxt [Nuxt app — app/ + server/]
     api["/api/* — public API"]
     internal["/api/internal — agent-only"]
-    auth[Better Auth]
-    db[(NuxtHub SQLite — Drizzle)]
+    auth[Supabase Auth]
+    db[(Supabase PostgreSQL — Drizzle)]
   end
 
   connect[Vercel Connect — Linear · Slack]

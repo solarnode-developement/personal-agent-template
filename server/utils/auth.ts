@@ -1,18 +1,7 @@
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { betterAuth } from "better-auth";
-import { db, schema } from "@nuxthub/db";
+import { createClient } from "@supabase/supabase-js";
 
-const productionUrl = process.env.BETTER_AUTH_URL?.trim();
+const supabaseUrl = process.env.SUPABASE_URL || "";
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
-export const auth = betterAuth({
-  baseURL: productionUrl,
-  secret: process.env.BETTER_AUTH_SECRET,
-  trustedOrigins: productionUrl ? [productionUrl] : undefined,
-  database: drizzleAdapter(db, {
-    provider: "sqlite",
-    schema,
-  }),
-  emailAndPassword: {
-    enabled: true,
-  },
-});
+// Admin client for server-side operations
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey);

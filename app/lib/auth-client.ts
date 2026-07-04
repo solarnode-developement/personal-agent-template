@@ -1,8 +1,6 @@
-import { createAuthClient } from "better-auth/vue";
+import { createClient } from "@supabase/supabase-js";
 
-// Node fetch (SSR) requires an absolute base URL; the browser can use same-origin.
-const baseURL = import.meta.server
-  ? (process.env.BETTER_AUTH_URL || "http://localhost:3000")
-  : undefined;
+const supabaseUrl = process.env.SUPABASE_URL || "";
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || "";
 
-export const authClient = createAuthClient(baseURL ? { baseURL } : undefined);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);

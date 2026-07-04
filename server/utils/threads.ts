@@ -1,5 +1,5 @@
 import { and, desc, eq } from "drizzle-orm";
-import { db, schema } from "@nuxthub/db";
+import { db, schema } from "~~/server/db/client";
 import type { ThreadRecord, ThreadState, ThreadSummary } from "#shared/types/thread";
 import { truncateThreadTitle } from "#shared/types/thread";
 

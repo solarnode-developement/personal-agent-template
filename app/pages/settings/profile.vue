@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { authClient } from "~/lib/auth-client";
-
 const { profile, pending, saveProfile, timezones, locales } = useProfile();
 const { memory, pending: memoryPending } = useMemory();
 
@@ -45,7 +43,6 @@ async function handleSave() {
       locale: form.locale,
       bio: form.bio,
     });
-    await authClient.getSession({ query: { disableCookieCache: true } });
     toast.add({ title: "Profile saved", color: "success" });
   }
   catch {

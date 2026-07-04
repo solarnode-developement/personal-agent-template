@@ -57,13 +57,12 @@ export default defineNuxtConfig({
       ],
     },
   },
-  hub: {
-    db: "sqlite",
-  },
+
   runtimeConfig: {
-    betterAuthSecret: process.env.BETTER_AUTH_SECRET,
-    betterAuthUrl: process.env.BETTER_AUTH_URL,
+    supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
     public: {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "",
     },
   },

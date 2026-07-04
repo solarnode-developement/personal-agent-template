@@ -1,14 +1,87 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
-import { toNodeHandler } from "better-auth/node";
-import { auth } from "~~/auth";
-
-const handleAuth = toNodeHandler(auth);
-
-type NodeRuntimeEvent = {
-  node: { req: IncomingMessage; res: ServerResponse };
-};
+import { supabaseAdmin } from "~~/server/utils/auth";
 
 export default defineEventHandler(async (event) => {
-  const { req, res } = (event as NodeRuntimeEvent).node;
-  await handleAuth(req, res);
+  const method = getMethod(event);
+
+  // Signup endpoint
+  if (method === "POST" && getRouterParam(event, "all") === "auth/signup") {
+    const body = await readBody(event);
+    const { email, password } = body;
+
+    if (!email || !password) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Email and password are required",
+      });
+    }
+
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: false,
+    });
+
+    if (error) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: error.message,
+      });
+    }
+
+    return { user: data.user };
+  }
+
+  // Signin endpoint
+  if (method === "POST" && getRouterParam(event, "all") === "auth/signin") {
+    const body = await readBody(event);
+    const { email, password } = body;
+
+    if (!email || !password) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Email and password are required",
+      });
+    }
+
+    const { data, error } = await supabaseAdmin.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: error.message,
+      });
+    }
+
+    // Set the access token in a cookie
+    setCookie(
+      event,
+      "sb-access-token",
+      data.session?.access_token || "",
+      {
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+        secure: true,
+        httpOnly: true,
+        sameSite: "lax",
+      }
+    );
+
+    return { user: data.user, session: data.session };
+  }
+
+  // Signout endpoint
+  if (
+    method === "POST" &&
+    getRouterParam(event, "all") === "auth/signout"
+  ) {
+    deleteCookie(event, "sb-access-token");
+    return { ok: true };
+  }
+
+  throw createError({
+    statusCode: 404,
+    statusMessage: "Not found",
+  });
 });

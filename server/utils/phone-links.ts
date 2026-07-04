@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { db, schema } from "@nuxthub/db";
+import { db, schema } from "~~/server/db/client";
 import type { PhoneLinkRecord } from "#shared/types/phone-link";
 
 const E164_PATTERN = /^\+[1-9]\d{7,14}$/;
@@ -25,7 +25,7 @@ function rowToRecord(row: typeof schema.phoneLinks.$inferSelect): PhoneLinkRecor
   return {
     appUserId: row.appUserId,
     phoneNumber: row.phoneNumber,
-    linkedAt: row.linkedAt,
+    linkedAt: row.linkedAt.toISOString(),
   };
 }
 

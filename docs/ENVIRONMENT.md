@@ -12,29 +12,38 @@ cp .env.example .env
 
 | Variable | How to get it |
 |----------|---------------|
-| `BETTER_AUTH_SECRET` | Run `openssl rand -base64 32` |
-| `BETTER_AUTH_URL` | `http://localhost:3000` locally, or your production URL |
+| `SUPABASE_URL` | From your Supabase project settings |
+| `SUPABASE_ANON_KEY` | From your Supabase project settings (public API key) |
+| `SUPABASE_SERVICE_ROLE_KEY` | From your Supabase project settings (secret API key) |
 | `INTERNAL_API_SECRET` | Run `openssl rand -base64 32` (must match on web + eve services) |
 
-These three variables are enough for local development. On Vercel, set them on **both** the `web` and `eve` services — and add a database (see below).
+These variables are enough for local development. On Vercel, set them on **both** the `web` and `eve` services. The database is managed by Supabase (no additional setup needed).
 
 ## Database
 
-### `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` (required on Vercel)
+### `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` (required)
 
-Locally, NuxtHub (`hub.db: "sqlite"`) uses a SQLite file at `.data/db/sqlite.db`, so no configuration is needed. On Vercel (or any serverless host) that local file cannot be created — without a hosted database every request fails with:
+The application uses Supabase PostgreSQL for data storage and authentication. These credentials are provided when you create a Supabase project.
 
-```
-Error: ConnectionFailed("Unable to open connection to local database .../.data/db/sqlite.db: 14")
-```
+**Getting your credentials:**
 
-Provision a [Turso database from the Vercel Marketplace](https://vercel.com/marketplace/tursocloud) — the Deploy button in the README includes it automatically, or add it to an existing project:
+1. Create a project at [supabase.com](https://supabase.com)
+2. Go to **Project Settings** → **API**
+3. Copy `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`
+
+**Local development:**
+
+Set the environment variables in `.env.local`:
 
 ```bash
-vercel integration add turso
+SUPABASE_URL=your-project-url
+SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
-This sets `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` on the project. NuxtHub detects them at **build time** and switches from the local file to the remote libSQL database, so redeploy after adding them. Then apply the schema:
+**Schema migration:**
+
+After setting up Supabase and environment variables:
 
 ```bash
 vercel env pull .env --yes
@@ -47,22 +56,13 @@ Canonical URL for SEO — used for Open Graph images, Twitter cards, and canonic
 
 ## Authentication
 
-### `BETTER_AUTH_SECRET` (required)
+Authentication is handled by Supabase Auth. All required credentials are set during the Supabase database setup (see Database section above).
 
-Random secret used by [Better Auth](https://www.better-auth.com/docs/installation#set-environment-variables) to sign sessions and tokens.
+**User authentication flow:**
 
-```bash
-openssl rand -base64 32
-```
-
-### `BETTER_AUTH_URL` (required)
-
-Public URL of the Nuxt app. Used for auth callbacks and as the base URL for agent → Nuxt internal API calls.
-
-| Environment | Value |
-|-------------|-------|
-| Local | `http://localhost:3000` |
-| Production | `https://your-domain.vercel.app` |
+- Email/password authentication via Supabase Auth
+- JWT tokens stored as HTTP-only cookies
+- Session validation using Supabase admin client on protected routes
 
 ## Internal API
 

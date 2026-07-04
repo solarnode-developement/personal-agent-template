@@ -1,23 +1,13 @@
-import { relations, sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { user } from "./auth";
+import { sql } from "drizzle-orm";
+import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
-export const userProfiles = sqliteTable("user_profiles", {
-  userId: text("user_id")
-    .primaryKey()
-    .references(() => user.id, { onDelete: "cascade" }),
+export const userProfiles = pgTable("user_profiles", {
+  userId: uuid("user_id").primaryKey(),
   timezone: text("timezone").notNull().default("UTC"),
   locale: text("locale").notNull().default("en"),
   bio: text("bio").notNull().default(""),
-  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .default(sql`now()`)
     .$onUpdate(() => new Date())
     .notNull(),
 });
-
-export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
-  user: one(user, {
-    fields: [userProfiles.userId],
-    references: [user.id],
-  }),
-}));

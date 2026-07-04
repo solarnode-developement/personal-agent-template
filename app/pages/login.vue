@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { authClient } from "~/lib/auth-client";
+import { supabase } from "~/lib/auth-client";
 
 definePageMeta({
   layout: false,
@@ -35,25 +35,29 @@ async function handleSubmit() {
 
   try {
     if (mode.value === "sign-up") {
-      const result = await authClient.signUp.email({
+      const { error: signUpError } = await supabase.auth.signUp({
         email: email.value,
         password: password.value,
-        name: name.value || email.value.split("@")[0] || "User",
+        options: {
+          data: {
+            name: name.value || email.value.split("@")[0] || "User",
+          },
+        },
       });
 
-      if (result.error) {
-        error.value = result.error.message ?? "Sign up failed.";
+      if (signUpError) {
+        error.value = signUpError.message ?? "Sign up failed.";
         return;
       }
     }
     else {
-      const result = await authClient.signIn.email({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email: email.value,
         password: password.value,
       });
 
-      if (result.error) {
-        error.value = result.error.message ?? "Sign in failed.";
+      if (signInError) {
+        error.value = signInError.message ?? "Sign in failed.";
         return;
       }
     }

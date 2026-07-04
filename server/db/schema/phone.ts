@@ -1,11 +1,17 @@
-import { primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
+import { pgTable, uuid, text, timestamp, primaryKey, uniqueIndex } from "drizzle-orm/pg-core";
 
-export const phoneLinks = sqliteTable("phone_links", {
-  appUserId: text("app_user_id").notNull(),
-  phoneNumber: text("phone_number").notNull(),
-  linkedAt: text("linked_at").notNull().default(sql`(datetime('now'))`),
-}, (table) => [
-  primaryKey({ columns: [table.phoneNumber] }),
-  uniqueIndex("phone_links_app_user_idx").on(table.appUserId),
-]);
+export const phoneLinks = pgTable(
+  "phone_links",
+  {
+    appUserId: uuid("app_user_id").notNull(),
+    phoneNumber: text("phone_number").notNull(),
+    linkedAt: timestamp("linked_at", { withTimezone: true })
+      .default(sql`now()`)
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.phoneNumber] }),
+    uniqueIndex("phone_links_app_user_idx").on(table.appUserId),
+  ]
+);
