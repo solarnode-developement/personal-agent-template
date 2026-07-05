@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { supabase } from "~/lib/auth-client";
-
 definePageMeta({
   layout: false,
   prerender: true,

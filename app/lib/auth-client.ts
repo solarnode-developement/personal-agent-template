@@ -1,9 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+// This file is imported by middleware, so we can't use composables at module level.
+// Instead, Nuxt injects $supabase via a plugin.
+// Use it in components/middleware via: const { $supabase } = useNuxtApp()
 
-// Get runtime config (works in both client and server)
-const config = useRuntimeConfig();
-
-export const supabase = createClient(
-  config.public.supabaseUrl as string,
-  config.public.supabaseAnonKey as string
-);
+export { }
