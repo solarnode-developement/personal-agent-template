@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
-import { supabase } from "~/lib/auth-client";
 
+const { $supabase } = useNuxtApp();
 const user = ref<any>(null);
 
 onMounted(async () => {
   const {
     data: { session },
-  } = await supabase.auth.getSession();
+  } = await $supabase.auth.getSession();
   user.value = session?.user || null;
 
   // Subscribe to auth changes
   const {
     data: { subscription },
-  } = supabase.auth.onAuthStateChange((event, session) => {
+  } = $supabase.auth.onAuthStateChange((event, session) => {
     user.value = session?.user || null;
   });
 
@@ -52,7 +52,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
 ]);
 
 async function signOut() {
-  await supabase.auth.signOut();
+  await $supabase.auth.signOut();
   await navigateTo("/login");
 }
 </script>
